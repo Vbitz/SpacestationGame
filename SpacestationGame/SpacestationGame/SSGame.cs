@@ -11,19 +11,23 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
-namespace Vbitz
+namespace SpacestationGame
 {
-    public class Entity
+    class SSGame : Vbitz.MainGame
     {
-        public virtual void Draw(MainGame game, EntityContainer parent)
+        protected override void OnInit()
         {
-
+            
         }
 
-        public virtual void Update(MainGame game, EntityContainer parent, GameTime time)
+        protected override void OnUpdate(GameTime gameTime)
         {
-
+            
         }
 
+        protected override void OnDraw(GameTime gameTime)
+        {
+            
+        }
     }
 }

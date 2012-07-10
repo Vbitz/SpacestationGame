@@ -10,7 +10,7 @@ namespace SpacestationGame
         /// </summary>
         static void Main(string[] args)
         {
-            using (MainGame game = new MainGame())
+            using (SSGame game = new SSGame())
             {
                 game.Run();
             }
