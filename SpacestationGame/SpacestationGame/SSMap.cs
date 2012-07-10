@@ -18,7 +18,8 @@ namespace SpacestationGame
     public enum SSTileTypes
     {
         Atmos,
-        BasicFloor
+        BasicFloor,
+        BasicWall
     }
 
     public class SSTile
@@ -46,6 +47,15 @@ namespace SpacestationGame
             private set { _displayColor = value; }
         }
 
+        private bool _physics;
+
+        public bool Physics
+        {
+            get { return _physics; }
+            private set { _physics = value; }
+        }
+
+
         public SSTile(SSTileTypes type, string displayName)
         {
             this._name = type;
@@ -55,6 +65,12 @@ namespace SpacestationGame
         public SSTile SetColor(Color col)
         {
             this.DisplayColor = col;
+            return this;
+        }
+
+        public SSTile SetPhysics()
+        {
+            this.Physics = true;
             return this;
         }
 
@@ -132,9 +148,28 @@ namespace SpacestationGame
                 }
             }
         }
+
+        public bool PhysicsTest(Rectangle rect, int x, int y)
+        {
+            if (!rect.Contains(new Rectangle(x * 16, y * 16, 16, 16)))
+            {
+                return false;
+            }
+            for (int i = maxTile; i > 0; i--)
+            {
+                if (tiles.ContainsKey(i))
+                {
+                    if (tiles[i].Physics)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 
-    public class SSMap : Entity
+    public class SSMap : Entity, IPhysicsProvider
     {
         public static Dictionary<SSTileTypes, SSTile> BasicTiles = null;
 
@@ -163,9 +198,10 @@ namespace SpacestationGame
             {
                 BasicTiles = new Dictionary<SSTileTypes, SSTile>();
                 BasicTiles.Add(SSTileTypes.BasicFloor, new SSTile(SSTileTypes.BasicFloor, "Basic Floor").SetColor(Color.SlateGray));
+                BasicTiles.Add(SSTileTypes.BasicWall, new SSTile(SSTileTypes.BasicWall, "Basic Wall").SetColor(Color.DimGray).SetPhysics());
             }
 
-            Generate(32, 32);
+            Generate(512, 512);
         }
 
         public void Generate(int width, int height)
@@ -178,17 +214,37 @@ namespace SpacestationGame
             {
                 for (int y = 0; y < height; y++)
                 {
+                    Map[x, y] = new SSBaseTile(Atmos.AtmosType.Normal, BasicTiles[SSTileTypes.BasicWall]);
+                }
+            }
+
+            for (int x = 1; x < width - 1; x++)
+            {
+                for (int y = 1; y < height - 1; y++)
+                {
                     Map[x, y] = new SSBaseTile(Atmos.AtmosType.Normal, BasicTiles[SSTileTypes.BasicFloor]);
                 }
+            }
+
+            Random rand = new Random();
+
+            for (int i = 0; i < 5000; i++)
+            {
+                Map[rand.Next(width), rand.Next(height)] = new SSBaseTile(Atmos.AtmosType.Normal, BasicTiles[SSTileTypes.BasicWall]);
             }
         }
 
         public override void Draw(MainGame game, EntityContainer parent)
         {
-            for (int x = 0; x < this.Width; x++)
+            Rectangle seenBounds = game.CameraBounds;
+            for (int x = seenBounds.X / 16; x < (seenBounds.X + seenBounds.Width) / 16 + 2; x++)
             {
-                for (int y = 0; y < this.Height; y++)
+                for (int y = seenBounds.Y / 16; y < (seenBounds.Y + seenBounds.Width) / 16 + 2; y++)
                 {
+                    if (x >= Width || x < 0 || y >= Height || y < 0)
+                    {
+                        continue;
+                    }
                     Map[x, y].Draw(game, x, y);
                 }
             }
@@ -196,13 +252,39 @@ namespace SpacestationGame
 
         public override void Update(MainGame game, EntityContainer parent, GameTime time)
         {
-            for (int x = 0; x < this.Width; x++)
+            Rectangle seenBounds = game.CameraBounds;
+            for (int x = seenBounds.X / 16; x < (seenBounds.X + seenBounds.Width) / 16 + 2; x++)
             {
-                for (int y = 0; y < this.Height; y++)
+                for (int y = seenBounds.Y / 16; y < (seenBounds.Y + seenBounds.Width) / 16 + 1 + 2; y++)
                 {
+                    if (x >= Width || x < 0 || y >= Height || y < 0)
+                    {
+                        continue;
+                    }
                     Map[x, y].Update(game, time);
                 }
             }
+        }
+
+        public bool Colides(Rectangle src, SSLiving ent)
+        {
+            for (int x = (src.X / 16); x < ((src.X + src.Width) / 16); x++)
+            {
+                for (int y = (src.Y / 16); y < ((src.X + src.Width) / 16); y++)
+                {
+                    //Console.WriteLine(-x + " : " + -y);
+                    if (-x >= Width || -x < 0 || -y >= Height || -y < 0)
+                    {
+                        return true;
+                    }
+                    SSBaseTile blk = Map[-x, -y];
+                    if (blk.PhysicsTest(src, x, y))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

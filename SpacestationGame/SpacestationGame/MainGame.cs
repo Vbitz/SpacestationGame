@@ -588,7 +588,7 @@ namespace Vbitz
 
             Container.Update(this, null, gameTime);
 
-            OnDraw(gameTime);
+            OnUpdate(gameTime);
 
             Container.Update();
 

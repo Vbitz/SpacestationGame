@@ -23,20 +23,22 @@ namespace SpacestationGame
         protected override void OnInit()
         {
             this.DrawColor = new Color(20, 20, 20);
+            this.UseCameraInput = false;
 
             GameMap = new SSMap();
-            LocalPlayer = new SSPlayer();
+            LocalPlayer = new SSPlayer(GameMap);
             Container.Add(GameMap);
+            Container.Add(LocalPlayer);
         }
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            
+
         }
 
         protected override void OnDraw(GameTime gameTime)
         {
-            
+            this.DrawString(LocalPlayer.ToString(), new Vector2(20, 70), Color.White, true);
         }
     }
 }
