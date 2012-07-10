@@ -213,7 +213,7 @@ namespace Vbitz
         /// <returns>Can it be seen</returns>
         public bool IsSeen(Rectangle rect)
         {
-            return WindowSize.Contains(rect);
+            return WindowSize.Intersects(rect);
         }
 
         /// <summary>
@@ -334,6 +334,8 @@ namespace Vbitz
 
         #region Draw Calls
 
+        private int drawCallsThisFrame = 0;
+
         /// <summary>
         /// Draw's a Image at a location, it will move with the camera by default
         /// </summary>
@@ -353,6 +355,7 @@ namespace Vbitz
                 return;
             }
             _Batch.Draw(texture, rect, Color.White);
+            drawCallsThisFrame++;
         }
 
         /// <summary>
@@ -372,6 +375,7 @@ namespace Vbitz
                 return;
             }
             _Batch.Draw(this.Pixel, rect, col);
+            drawCallsThisFrame++;
         }
 
         /// <summary>
@@ -391,6 +395,7 @@ namespace Vbitz
                 return;
             }
             _Batch.Draw(GetTexture(imageName), rect, Color.White);
+            drawCallsThisFrame++;
         }
 
         /// <summary>
@@ -411,6 +416,7 @@ namespace Vbitz
                 return;
             }
             _Batch.Draw(GetTexture(imageName), rect, col);
+            drawCallsThisFrame++;
         }
 
         /// <summary>
@@ -447,14 +453,16 @@ namespace Vbitz
         /// <param name="fix">Should this text fix in one spot to not move with the camera</param>
         public void DrawString(string fontName, string str, Vector2 location, Color col, bool fix = true)
         {
-            Vector2 locationFixed = fix ? new Vector2(location.X + CameraVec.X, location.Y + CameraVec.Y) : location;
+            Vector2 locationFixed = !fix ? new Vector2(location.X + CameraVec.X, location.Y + CameraVec.Y) : location;
             if (Fonts.ContainsKey(fontName) == false)
             {
                 _Batch.DrawString(this.Fonts["Placeholder"], str, locationFixed, col);
+                drawCallsThisFrame++;
             }
             else
             {
                 _Batch.DrawString(this.Fonts[fontName], str, locationFixed, col);
+                drawCallsThisFrame++;
             }
         }
 
@@ -506,14 +514,24 @@ namespace Vbitz
             {
                 return;
             }
-            DrawImage(new Rectangle(5, 5, 200, 25), new Color(0, 0, 0, 55));
-            DrawString("Placeholder", this.CurrentFrameTime.ToString() + "ms", new Vector2(20, 10), Color.Black, true);
-            DrawString("Placeholder", ":  " + this.lastFPS + "fps", new Vector2(110, 10), Color.Black, true);
+            DrawImage(new Rectangle(5, 5, 200, 55), new Color(200, 200, 200, 55), true);
+            DrawString("Placeholder", this.CurrentFrameTime.ToString() + "ms", new Vector2(20, 15), Color.Black, true);
+            DrawString("Placeholder", ":  " + this.lastFPS + "fps", new Vector2(110, 15), Color.Black, true);
+            DrawString("Placeholder", "draw calls: " + drawCallsThisFrame.ToString(), new Vector2(20, 35), Color.Black, true);
         }
 
         #endregion
 
         #region Core XNA
+
+        private Color _drawColor = Color.HotPink;
+
+        public Color DrawColor
+        {
+            get { return _drawColor; }
+            protected set { _drawColor = value; }
+        }
+
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -585,7 +603,9 @@ namespace Vbitz
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.HotPink);
+            GraphicsDevice.Clear(DrawColor);
+
+            drawCallsThisFrame = 0;
 
             _Batch.Begin();
             

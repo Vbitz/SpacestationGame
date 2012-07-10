@@ -11,13 +11,22 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+using Vbitz;
+
 namespace SpacestationGame
 {
-    class SSGame : Vbitz.MainGame
+    class SSGame : MainGame
     {
+        SSMap GameMap;
+        public SSPlayer LocalPlayer;
+
         protected override void OnInit()
         {
-            
+            this.DrawColor = new Color(20, 20, 20);
+
+            GameMap = new SSMap();
+            LocalPlayer = new SSPlayer();
+            Container.Add(GameMap);
         }
 
         protected override void OnUpdate(GameTime gameTime)
