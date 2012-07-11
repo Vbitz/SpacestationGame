@@ -151,9 +151,19 @@ namespace SpacestationGame
 
         public bool PhysicsTest(Rectangle rect, int x, int y)
         {
-            if (!rect.Contains(new Rectangle(x * 16, y * 16, 16, 16)))
+            //Console.WriteLine(x + " : " + y);
+            if (!rect.Intersects(new Rectangle(x * 16, y * 16, 16, 16)))
             {
                 return false;
+            }
+            if (tiles.Count == 1)
+            {
+                int[] keys = new int[8];
+                tiles.Keys.CopyTo(keys, 0);
+                if (tiles[keys[0]].Physics)
+                {
+                    return true;
+                }
             }
             for (int i = maxTile; i > 0; i--)
             {
@@ -228,7 +238,7 @@ namespace SpacestationGame
 
             Random rand = new Random();
 
-            for (int i = 0; i < 5000; i++)
+            for (int i = 0; i < 20000; i++)
             {
                 Map[rand.Next(width), rand.Next(height)] = new SSBaseTile(Atmos.AtmosType.Normal, BasicTiles[SSTileTypes.BasicWall]);
             }
@@ -239,7 +249,7 @@ namespace SpacestationGame
             Rectangle seenBounds = game.CameraBounds;
             for (int x = seenBounds.X / 16; x < (seenBounds.X + seenBounds.Width) / 16 + 2; x++)
             {
-                for (int y = seenBounds.Y / 16; y < (seenBounds.Y + seenBounds.Width) / 16 + 2; y++)
+                for (int y = seenBounds.Y / 16; y < (seenBounds.Y + seenBounds.Height) / 16 + 2; y++)
                 {
                     if (x >= Width || x < 0 || y >= Height || y < 0)
                     {
@@ -255,7 +265,7 @@ namespace SpacestationGame
             Rectangle seenBounds = game.CameraBounds;
             for (int x = seenBounds.X / 16; x < (seenBounds.X + seenBounds.Width) / 16 + 2; x++)
             {
-                for (int y = seenBounds.Y / 16; y < (seenBounds.Y + seenBounds.Width) / 16 + 1 + 2; y++)
+                for (int y = seenBounds.Y / 16; y < (seenBounds.Y + seenBounds.Height) / 16 + 1 + 2; y++)
                 {
                     if (x >= Width || x < 0 || y >= Height || y < 0)
                     {
@@ -268,9 +278,9 @@ namespace SpacestationGame
 
         public bool Colides(Rectangle src, SSLiving ent)
         {
-            for (int x = (src.X / 16); x < ((src.X + src.Width) / 16); x++)
+            for (int x = (src.X / 16) - 2; x < ((src.X + src.Width) / 16) + 2; x++)
             {
-                for (int y = (src.Y / 16); y < ((src.X + src.Width) / 16); y++)
+                for (int y = (src.Y / 16) - 2; y < ((src.X + src.Height) / 16) + 2; y++)
                 {
                     //Console.WriteLine(-x + " : " + -y);
                     if (-x >= Width || -x < 0 || -y >= Height || -y < 0)

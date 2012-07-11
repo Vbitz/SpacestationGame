@@ -26,7 +26,7 @@ namespace SpacestationGame
 
         protected Rectangle MoveSimulate(float x, float y)
         {
-            return new Rectangle((int)(LocationF.X + x), (int)(LocationF.Y + y), 32, 32);
+            return new Rectangle((int)(LocationF.X + x), (int)(LocationF.Y + y), 16, 16);
         }
 
         private float _OxygenLevel = 1.0f;
