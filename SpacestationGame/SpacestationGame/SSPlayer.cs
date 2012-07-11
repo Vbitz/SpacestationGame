@@ -22,6 +22,7 @@ namespace SpacestationGame
         public SSPlayer(IPhysicsProvider prov)
         {
             Physics = prov;
+            this.LocationF = new Vector2(-(MainGame.WindowWidth / 2 - 8), -(MainGame.WindowHeight / 2 - 8));
         }
 
         public override void Update(MainGame game, EntityContainer parent, GameTime time)
@@ -59,7 +60,7 @@ namespace SpacestationGame
 
         public override void Draw(MainGame game, EntityContainer parent)
         {
-            game.DrawImage(new Rectangle(300, 300, 16, 16), Color.RoyalBlue, true);
+            game.DrawImage(new Rectangle(MainGame.WindowWidth / 2 - 8, MainGame.WindowHeight / 2 - 8, LivingEntSize, LivingEntSize), Color.RoyalBlue, true);
         }
 
         public override string ToString()

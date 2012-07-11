@@ -19,6 +19,9 @@ namespace Vbitz
     /// </summary>
     public class MainGame : Microsoft.Xna.Framework.Game
     {
+        public const int WindowWidth = 1280;
+        public const int WindowHeight = 800;
+
         GraphicsDeviceManager graphics;
         private SpriteBatch _Batch;
 
@@ -31,12 +34,12 @@ namespace Vbitz
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            this.graphics.PreferredBackBufferWidth = 1280;
-            this.graphics.PreferredBackBufferHeight = 800;
+            this.graphics.PreferredBackBufferWidth = WindowWidth;
+            this.graphics.PreferredBackBufferHeight = WindowHeight;
             this.IsMouseVisible = true;
             this.IsFixedTimeStep = false;
 
-            WindowSize = new Rectangle(0, 0, 1280, 800);
+            WindowSize = new Rectangle(0, 0, WindowWidth, WindowHeight);
         }
 
         #region Input

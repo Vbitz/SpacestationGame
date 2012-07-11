@@ -86,7 +86,7 @@ namespace SpacestationGame
 
         public virtual void Draw(MainGame game, int x, int y)
         {
-            game.DrawImage(new Rectangle(x * 16, y * 16, 16, 16), this.DisplayColor);
+            game.DrawImage(new Rectangle(x * SSMap.TileSize, y * SSMap.TileSize, SSMap.TileSize, SSMap.TileSize), this.DisplayColor);
         }
 
         public override string ToString()
@@ -151,8 +151,8 @@ namespace SpacestationGame
 
         public bool PhysicsTest(Rectangle rect, int x, int y)
         {
-            //Console.WriteLine(x + " : " + y);
-            if (!rect.Intersects(new Rectangle(x * 16, y * 16, 16, 16)))
+            //Console.WriteLine(rect.ToString() + " : " +  x + " : " + y);
+            if (!rect.Intersects(new Rectangle(x * SSMap.TileSize, y * SSMap.TileSize, SSMap.TileSize, SSMap.TileSize)))
             {
                 return false;
             }
@@ -181,6 +181,8 @@ namespace SpacestationGame
 
     public class SSMap : Entity, IPhysicsProvider
     {
+        public const int TileSize = 32;
+
         public static Dictionary<SSTileTypes, SSTile> BasicTiles = null;
 
         SSBaseTile[,] Map;
@@ -247,9 +249,9 @@ namespace SpacestationGame
         public override void Draw(MainGame game, EntityContainer parent)
         {
             Rectangle seenBounds = game.CameraBounds;
-            for (int x = seenBounds.X / 16; x < (seenBounds.X + seenBounds.Width) / 16 + 2; x++)
+            for (int x = seenBounds.X / TileSize; x < (seenBounds.X + seenBounds.Width) / TileSize + 2; x++)
             {
-                for (int y = seenBounds.Y / 16; y < (seenBounds.Y + seenBounds.Height) / 16 + 2; y++)
+                for (int y = seenBounds.Y / TileSize; y < (seenBounds.Y + seenBounds.Height) / TileSize + 2; y++)
                 {
                     if (x >= Width || x < 0 || y >= Height || y < 0)
                     {
@@ -263,9 +265,9 @@ namespace SpacestationGame
         public override void Update(MainGame game, EntityContainer parent, GameTime time)
         {
             Rectangle seenBounds = game.CameraBounds;
-            for (int x = seenBounds.X / 16; x < (seenBounds.X + seenBounds.Width) / 16 + 2; x++)
+            for (int x = seenBounds.X / TileSize; x < (seenBounds.X + seenBounds.Width) / TileSize + 2; x++)
             {
-                for (int y = seenBounds.Y / 16; y < (seenBounds.Y + seenBounds.Height) / 16 + 1 + 2; y++)
+                for (int y = seenBounds.Y / TileSize; y < (seenBounds.Y + seenBounds.Height) / TileSize + 1 + 2; y++)
                 {
                     if (x >= Width || x < 0 || y >= Height || y < 0)
                     {
@@ -278,17 +280,17 @@ namespace SpacestationGame
 
         public bool Colides(Rectangle src, SSLiving ent)
         {
-            for (int x = (src.X / 16) - 2; x < ((src.X + src.Width) / 16) + 2; x++)
+            Rectangle rect = new Rectangle(-src.X, -src.Y, src.Width, src.Height);
+            for (int x = (rect.X / TileSize) - 2; x < ((rect.X + rect.Width) / TileSize) + 2; x++)
             {
-                for (int y = (src.Y / 16) - 2; y < ((src.X + src.Height) / 16) + 2; y++)
+                for (int y = (rect.Y / TileSize) - 2; y < ((rect.Y + rect.Height) / TileSize) + 2; y++)
                 {
-                    //Console.WriteLine(-x + " : " + -y);
-                    if (-x >= Width || -x < 0 || -y >= Height || -y < 0)
+                    if (x >= Width || x < 0 || y >= Height || y < 0)
                     {
-                        return true;
+                        continue;
                     }
-                    SSBaseTile blk = Map[-x, -y];
-                    if (blk.PhysicsTest(src, x, y))
+                    SSBaseTile blk = Map[x, y];
+                    if (blk.PhysicsTest(rect, x, y))
                     {
                         return true;
                     }

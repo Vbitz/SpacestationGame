@@ -27,7 +27,7 @@ namespace SpacestationGame
 
             GameMap = new SSMap();
             LocalPlayer = new SSPlayer(GameMap);
-            //Container.Add(GameMap);
+            Container.Add(GameMap);
             Container.Add(LocalPlayer);
         }
 

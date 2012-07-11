@@ -17,7 +17,9 @@ namespace SpacestationGame
 {
     public class SSLiving : Entity
     {
-        protected Vector2 LocationF = new Vector2(-300, -300);
+        public const int LivingEntSize = 24;
+
+        protected Vector2 LocationF;
 
         protected void Move(float x, float y)
         {
@@ -26,7 +28,7 @@ namespace SpacestationGame
 
         protected Rectangle MoveSimulate(float x, float y)
         {
-            return new Rectangle((int)(LocationF.X + x), (int)(LocationF.Y + y), 16, 16);
+            return new Rectangle((int)(LocationF.X + x), (int)(LocationF.Y + y), LivingEntSize, LivingEntSize);
         }
 
         private float _OxygenLevel = 1.0f;
