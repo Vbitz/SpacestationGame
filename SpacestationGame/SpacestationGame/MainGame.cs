@@ -37,7 +37,7 @@ namespace Vbitz
             this.graphics.PreferredBackBufferWidth = WindowWidth;
             this.graphics.PreferredBackBufferHeight = WindowHeight;
             this.IsMouseVisible = true;
-            this.IsFixedTimeStep = false;
+            //this.IsFixedTimeStep = false;
 
             WindowSize = new Rectangle(0, 0, WindowWidth, WindowHeight);
         }

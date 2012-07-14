@@ -60,7 +60,7 @@ namespace SpacestationGame
 
         public override void Draw(MainGame game, EntityContainer parent)
         {
-            game.DrawImage(new Rectangle(MainGame.WindowWidth / 2 - 8, MainGame.WindowHeight / 2 - 8, LivingEntSize, LivingEntSize), Color.RoyalBlue, true);
+            game.DrawImage("player", new Rectangle(MainGame.WindowWidth / 2 - 8, MainGame.WindowHeight / 2 - 8, LivingEntSize, LivingEntSize), true);
         }
 
         public override string ToString()
