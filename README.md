@@ -1,7 +1,7 @@
 Project "Spacestation Game"
 ===========================
 
-![Rendered Map](raw_res/Maps/spacestationtest.png)
+![Rendered Map](renderedmap)
 
 Well it's a game. But that's not why I made this repo.
 The MainGame and EntityContainer class are something that might be worth looking at.
