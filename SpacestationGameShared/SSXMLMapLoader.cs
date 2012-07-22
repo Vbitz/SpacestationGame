@@ -11,7 +11,7 @@ using System.IO.Compression;
 
 namespace SpacestationGame
 {
-    internal class SSMapData
+    public class SSMapData
     {
         public int Width;
         public int Height;
@@ -32,7 +32,7 @@ namespace SpacestationGame
         }
     }
 
-    internal class SSTileSetImage
+    public class SSTileSetImage
     {
         public int Width;
         public int Height;
@@ -53,11 +53,11 @@ namespace SpacestationGame
         }
     }
 
-    internal class SSMapLayerData
+    public class SSMapLayerData
     {
         public SSTileData[] Tiles;
 
-        internal SSMapLayerData(int w, int h, SSTileData bse)
+        public SSMapLayerData(int w, int h, SSTileData bse)
         {
             Tiles = new SSTileData[w * h];
             int i = 0;
@@ -71,13 +71,13 @@ namespace SpacestationGame
         }
     }
 
-    internal class SSTileData
+    public struct SSTileData
     {
         public byte TType;
         public byte AtmosType;
         public byte AddedData;
 
-        internal SSTileData(SSTileTypes type, AtmosType atmos, byte add)
+        public SSTileData(SSTileTypes type, AtmosType atmos, byte add)
         {
             TType = (byte)type;
             AtmosType = (byte)atmos;
@@ -88,19 +88,46 @@ namespace SpacestationGame
     public class SSXMLMapLoader
     {
 
-        internal static string BuildBase64Data(SSMapLayerData data)
+        public static string BuildBase64Data(SSMapLayerData data)
         {
             byte[] mapData = new byte[data.Tiles.Length * 3];
             for (int i = 0; i < data.Tiles.Length; i += 3)
-			{
-                mapData[i] = data.Tiles[i/3].TType;
-                mapData[i + 1] = data.Tiles[i/3].AtmosType;
-                mapData[i + 2] = data.Tiles[i/3].AddedData;
-			}
+            {
+                mapData[i] = data.Tiles[i / 3].TType;
+                mapData[i + 1] = data.Tiles[i / 3].AtmosType;
+                mapData[i + 2] = data.Tiles[i / 3].AddedData;
+            }
             MemoryStream output = new MemoryStream();
             GZipStream str = new GZipStream(output, CompressionMode.Compress);
             str.Write(mapData, 0, mapData.Length);
-            return Convert.ToBase64String(output.GetBuffer());
+            str.Close();
+            return Convert.ToBase64String(output.ToArray());
+        }
+
+        public static SSMapLayerData UnbuildBase64Data(int w, int h, string data)
+        {
+            MemoryStream input = new MemoryStream(Convert.FromBase64String(data));
+            SSMapLayerData ret = new SSMapLayerData(w, h, new SSTileData(SSTileTypes.Space, AtmosType.Space, 0x00));
+            GZipStream str = new GZipStream(input, CompressionMode.Decompress);
+            MemoryStream output = new MemoryStream();
+
+            str.Flush();
+            str.CopyTo(output);
+            str.Close();
+
+            byte[] decompressedData = output.ToArray();
+
+            int x = 0;
+
+            for (int i = 0; i < decompressedData.Length; i += 3)
+            {
+                ret.Tiles[x].TType = decompressedData[i];
+                ret.Tiles[x].AtmosType = decompressedData[i + 1];
+                ret.Tiles[x].AddedData = decompressedData[i + 2];
+                x++;
+            }
+
+            return ret;
         }
 
         public static void ParseMapXml(string filename)
@@ -117,6 +144,9 @@ namespace SpacestationGame
 
             XmlReader reader = XmlReader.Create(filename);
 
+            int tileWidth = 0;
+            int tileHeight = 0;
+
             while (reader.Read())
             {
                 if (!reader.IsStartElement())
@@ -128,21 +158,27 @@ namespace SpacestationGame
                     case "map":
                         data = new SSMapData(Int32.Parse(reader.GetAttribute("width")), Int32.Parse(reader.GetAttribute("height")));
                         break;
-                    case "image":
+                    case "tileset":
+                        tileWidth = Int32.Parse(reader.GetAttribute("tilewidth"));
+                        tileHeight = Int32.Parse(reader.GetAttribute("tileheight"));
+                        break;
+                    case "image":   
                         FileInfo imageName = new FileInfo(reader.GetAttribute("source"));
-                        data.TilesetImageNames.Add(new SSTileSetImage(Int32.Parse(reader.GetAttribute("width")), Int32.Parse(reader.GetAttribute("height")), imageName.Name.Split('.')[0]));
+                        data.TilesetImageNames.Add(new SSTileSetImage(tileWidth, tileHeight, imageName.Name.Split('.')[0]));
                         break;
                     case "data":
-                        byte[] tiledata = new byte[data.Width * data.Height];
-                        reader.ReadElementContentAsBase64(tiledata, 0, data.Width * data.Height);
+                        byte[] tiledata = new byte[data.Width * data.Height * 4];
+                        string[] lines = reader.ReadElementContentAsString().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                         SSMapLayerData data2 = new SSMapLayerData(data.Width, data.Height, new SSTileData(SSTileTypes.Space, AtmosType.Space, 0x00));
 
                         int i = 0;
-                        for (int x = 0; x < data.Width; x++)
+                        for (int y = 0; y < data.Height; y++)
                         {
-                            for (int y = 0; y < data.Height; y++)
+                            string[] tokens = lines[y].Split(',');
+                            for (int x = 0; x < data.Width; x++)
                             {
-                                data2.Tiles[i] = new SSTileData(SSTileTypes.GenericImage, AtmosType.Normal, tiledata[i++]);
+                                data2.Tiles[i] = new SSTileData(SSTileTypes.GenericImage, AtmosType.Normal, (byte)Int32.Parse(tokens[x]));
+                                i++;
                             }
                         }
                         data.Layers.Add(BuildBase64Data(data2));

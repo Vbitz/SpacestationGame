@@ -389,16 +389,7 @@ namespace Vbitz
         /// <param name="fix">Should this image fix in one spot to not move with the camera</param>
         public void DrawImage(string imageName, Rectangle rect, bool fix = false)
         {
-            if (!fix)
-            {
-                rect.Offset(Camera);
-            }
-            if (!IsSeen(rect))
-            {
-                return;
-            }
-            _Batch.Draw(GetTexture(imageName), rect, Color.White);
-            drawCallsThisFrame++;
+            DrawImage(imageName, rect, Color.White, fix);
         }
 
         /// <summary>
@@ -419,6 +410,65 @@ namespace Vbitz
                 return;
             }
             _Batch.Draw(GetTexture(imageName), rect, col);
+            drawCallsThisFrame++;
+        }
+
+        /// <summary>
+        /// Draw's a Image at a location, it will move with the camera by default
+        /// </summary>
+        /// <param name="image">The loaded texture</param>
+        /// <param name="location">The location to draw the image at, this is NOT centered in the middle of the image</param>
+        /// <param name="fix">Should this image fix in one spot to not move with the camera</param>
+        public void DrawImage(Texture2D image, Vector2 location, bool fix = false)
+        {
+            Rectangle rect = new Rectangle((int)location.X, (int)location.Y, image.Width, image.Height);
+            DrawImage(image, rect, fix);
+            drawCallsThisFrame++;
+        }
+
+        /// <summary>
+        /// Draw's a image scaled to fit rect
+        /// </summary>
+        /// <param name="image">The loaded texture</param>
+        /// <param name="rect">The rectangle to fit the image in</param>
+        /// <param name="fix">Should this image fix in one spot to not move with the camera</param>
+        public void DrawImage(Texture2D image, Rectangle rect, bool fix = false)
+        {
+            DrawImage(image, rect, Color.White, fix);
+        }
+
+        /// <summary>
+        /// Draw's a image scaled to fit rect
+        /// </summary>
+        /// <param name="image">The loaded texture</param>
+        /// <param name="rect">The rectangle to fit the image in</param>
+        /// <param name="col">The color to tint it with</param>
+        /// <param name="fix">Should this image fix in one spot to not move with the camera</param>
+        public void DrawImage(Texture2D image, Rectangle rect, Color col, bool fix = false)
+        {
+            if (!fix)
+            {
+                rect.Offset(Camera);
+            }
+            if (!IsSeen(rect))
+            {
+                return;
+            }
+            _Batch.Draw(image, rect, col);
+            drawCallsThisFrame++;
+        }
+
+        public void DrawImage(Texture2D image, Rectangle rect, Rectangle src, Color col, bool fix = false)
+        {
+            if (!fix)
+            {
+                rect.Offset(Camera);
+            }
+            if (!IsSeen(rect))
+            {
+                return;
+            }
+            _Batch.Draw(image, rect, src, col);
             drawCallsThisFrame++;
         }
 

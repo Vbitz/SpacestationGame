@@ -124,6 +124,7 @@
     <Compile Include="SSMap.cs" />
     <Compile Include="SSPlayer.cs" />
     <Compile Include="SSTiles.cs" />
+    <Compile Include="Tileset.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

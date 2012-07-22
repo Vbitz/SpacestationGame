@@ -17,9 +17,9 @@ namespace SpacestationGame
 {
     public class SSPlayer : SSLiving
     {
-        private IPhysicsProvider Physics;
+        private ISSPhysicsProvider Physics;
 
-        public SSPlayer(IPhysicsProvider prov)
+        public SSPlayer(ISSPhysicsProvider prov)
         {
             Physics = prov;
             this.LocationF = new Vector2(-(MainGame.WindowWidth / 2 - 8), -(MainGame.WindowHeight / 2 - 8));

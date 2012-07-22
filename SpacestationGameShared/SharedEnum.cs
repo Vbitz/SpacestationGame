@@ -13,10 +13,11 @@ namespace SpacestationGame
 
     public enum SSTileTypes
     {
-        Atmos = 0,
-        BasicFloor = 1,
-        BasicWall = 2,
-        Space = 3,
-        GenericImage = 4
+        Invalid = 0,
+        Atmos = 1,
+        BasicFloor = 2,
+        BasicWall = 3,
+        Space = 4,
+        GenericImage = 5
     }
 }

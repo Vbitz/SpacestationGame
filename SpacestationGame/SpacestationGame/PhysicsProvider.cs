@@ -15,7 +15,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace SpacestationGame
 {
-    public interface IPhysicsProvider
+    public interface ISSPhysicsProvider
     {
         bool Colides(Rectangle rect, SSLiving ent);
 
