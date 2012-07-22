@@ -611,14 +611,14 @@ namespace Vbitz
             drawCallsThisFrame = 0;
 
             _Batch.Begin();
-            
-            Container.Draw(this, null);
 
-            OnDraw(gameTime);
+                Container.Draw(this, null);
 
-            Container.Update();
+                OnDraw(gameTime);
 
-            DrawFPSCounter();
+                Container.Update();
+
+                DrawFPSCounter();
 
             _Batch.End();
 

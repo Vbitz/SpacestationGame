@@ -60,12 +60,6 @@ namespace SpacestationGame
 
     public class Atmos : SSTile
     {
-        public enum AtmosType
-        {
-            Normal,
-            Space
-        }
-
         public Atmos(AtmosType type) :
             base(SSTileTypes.Atmos, "Atmos (Hidden)")
         {

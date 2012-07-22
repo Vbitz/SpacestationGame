@@ -15,13 +15,6 @@ using Vbitz;
 
 namespace SpacestationGame
 {
-    public enum SSTileTypes
-    {
-        Atmos,
-        BasicFloor,
-        BasicWall
-    }
-
     public class SSTile
     {
         private SSTileTypes _name;
@@ -102,7 +95,7 @@ namespace SpacestationGame
         int maxTile = 0;
         Dictionary<int, SSTile> tiles = new Dictionary<int, SSTile>();
 
-        public SSBaseTile(Atmos.AtmosType atmosType, SSTile floor)
+        public SSBaseTile(AtmosType atmosType, SSTile floor)
         {
             atmosTile = new Atmos(atmosType);
             AddTile(0, floor);
@@ -211,6 +204,7 @@ namespace SpacestationGame
                 BasicTiles = new Dictionary<SSTileTypes, SSTile>();
                 BasicTiles.Add(SSTileTypes.BasicFloor, new SSTile(SSTileTypes.BasicFloor, "Basic Floor").SetColor(Color.SlateGray));
                 BasicTiles.Add(SSTileTypes.BasicWall, new SSTile(SSTileTypes.BasicWall, "Basic Wall").SetColor(Color.DimGray).SetPhysics());
+                BasicTiles.Add(SSTileTypes.Space, new SSTile(SSTileTypes.Space, "Space").SetColor(Color.Transparent));
             }
 
             Generate(512, 512);
@@ -226,7 +220,7 @@ namespace SpacestationGame
             {
                 for (int y = 0; y < height; y++)
                 {
-                    Map[x, y] = new SSBaseTile(Atmos.AtmosType.Normal, BasicTiles[SSTileTypes.BasicWall]);
+                    Map[x, y] = new SSBaseTile(AtmosType.Normal, BasicTiles[SSTileTypes.BasicWall]);
                 }
             }
 
@@ -234,7 +228,7 @@ namespace SpacestationGame
             {
                 for (int y = 1; y < height - 1; y++)
                 {
-                    Map[x, y] = new SSBaseTile(Atmos.AtmosType.Normal, BasicTiles[SSTileTypes.BasicFloor]);
+                    Map[x, y] = new SSBaseTile(AtmosType.Normal, BasicTiles[SSTileTypes.BasicFloor]);
                 }
             }
 
@@ -242,7 +236,7 @@ namespace SpacestationGame
 
             for (int i = 0; i < 20000; i++)
             {
-                Map[rand.Next(width), rand.Next(height)] = new SSBaseTile(Atmos.AtmosType.Normal, BasicTiles[SSTileTypes.BasicWall]);
+                Map[rand.Next(width), rand.Next(height)] = new SSBaseTile(AtmosType.Normal, BasicTiles[SSTileTypes.BasicWall]);
             }
         }
 
@@ -280,6 +274,8 @@ namespace SpacestationGame
 
         public bool Colides(Rectangle src, SSLiving ent)
         {
+            // Physics is disabled until the map loading is finished
+            return false;
             Rectangle rect = new Rectangle(-src.X, -src.Y, src.Width, src.Height);
             for (int x = (rect.X / TileSize) - 2; x < ((rect.X + rect.Width) / TileSize) + 2; x++)
             {
